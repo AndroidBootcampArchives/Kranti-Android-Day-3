@@ -1,10 +1,15 @@
 package Storage;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 import model.Issue;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import static android.provider.BaseColumns._ID;
 
 
@@ -39,8 +44,22 @@ public class DataStorage extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     }
 
-//    public List<Issue> get() {
-//
-//    }
+    public List<Issue> get() {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor c = db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
+        List<Issue> issues = new ArrayList<Issue>();
+        if (c != null) {
+            if (c.moveToFirst()) {
+                do {
+                    String title = c.getString(c.getColumnIndex(TITLE_COL));
+                    String description = c.getString(c.getColumnIndex(DESCRIPTION_COL));
+                    Issue issue = new Issue(title, description);
+                    issues.add(issue);
+                } while (c.moveToNext());
+            }
+        }
+        return issues;
+    }
+
 
 }
